@@ -23,3 +23,4 @@ heroku open
 
 ## Heroku
 https://git.heroku.com/secret-taiga-20475.git
+https://secret-taiga-20475.herokuapp.com
