@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-net=:8080 --allow-env=PORT
+#!/usr/bin/env -S deno run --allow-net=:8080 --allow-env=PORT --allow-read
 
 const DEFAULT_PORT = 8080;
 const envPort = Deno.env.get("PORT");
@@ -37,9 +37,26 @@ router.get("/hello-world", (ctx) => {
     ctx.response.body = "This is my hello world";
 });
 
+router.get("/.well-known/apple-app-site-association", (ctx) => {
+  ctx.response.status = 200;
+  ctx.response.headers.set("Content-Type", "application/json");
+  const text = Deno.readTextFileSync(`${Deno.cwd()}/.well-known/apple-app-site-association`);
+  ctx.response.body = text;
+});
+
 router.get("/", (ctx) => {
   ctx.response.body = "This is Root";
 });
+
+// Static Content
+app.use(async (context, next) => {
+  const root = `${Deno.cwd()}`
+  try {
+      await context.send({ root })
+  } catch {
+      next()
+  }
+})
 
 app.use(router.allowedMethods());
 app.use(router.routes());
